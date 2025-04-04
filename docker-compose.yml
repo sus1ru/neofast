@@ -1,0 +1,45 @@
+services:
+  neofast:
+    image: zite/neofast
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8024:8000"
+    volumes:
+      - ./sock/:/sock/
+      - ./:/code
+      - ./logs/:/logs/
+    entrypoint: "/code/entrypoint.sh"
+    env_file:
+      - .env
+      - .pgenv
+    networks:
+      - neofast
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - .pgenv
+    ports:
+      - "5052:80"
+    restart: always
+    networks:
+      - neofast
+
+  neofast_redis:
+    image: redis:alpine
+    restart: always
+    command: "redis-server --appendonly yes"
+    # ports:"
+    #   - 6380:6379
+    volumes:
+      - ./_redis_data:/var/lib/redis
+      - ./redis/rc.local:/etc/rc.local
+    networks:
+      - neofast
+
+networks:
+  neofast:
+    driver: bridge

@@ -1,0 +1,7 @@
+binutils
+libproj-dev
+gettext
+gcc
+libc-dev
+nano
+git
